@@ -117,6 +117,9 @@ def get_player_whitelist():
 intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True
+intents.members = True
+intents.guilds = True
+
 TEMP_ACTIVITY_ROLE = "Temp activity role"
 REAL_ACTIVITY_ROLE = "Activities"
 xairen_guild: discord.Guild = None
