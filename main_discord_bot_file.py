@@ -18,19 +18,19 @@ def is_dev():
     return commands.check(check)
 
 def add_player_to_whitelist(_username: str):
-    _r_post_obj = requests.post("http://192.168.0.133:7500", json={'name': _username}, headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
+    _r_post_obj = requests.post(os.environ.get("WHITELIST_API_ENDPOINT"), json={'name': _username}, headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
     _r_post_obj.raise_for_status()
     
     return _r_post_obj.text
 
 def remove_player_from_whitelist(_username: str):
-    _r_post_obj = requests.delete("http://192.168.0.133:7500", json={'name': _username}, headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
+    _r_post_obj = requests.delete(os.environ.get("WHITELIST_API_ENDPOINT"), json={'name': _username}, headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
     _r_post_obj.raise_for_status()
     
     return _r_post_obj.text
 
 def get_player_whitelist():
-    _r_post_obj = requests.get("http://192.168.0.133:7500", headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
+    _r_post_obj = requests.get(os.environ.get("WHITELIST_API_ENDPOINT"), headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
     _r_post_obj.raise_for_status()
     
     return _r_post_obj.json()
