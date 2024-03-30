@@ -158,10 +158,12 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
     _valid_members_set = set()
     for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302, 1223681351903875222]:
         _x_g_r_t: discord.Role = xairen_guild.get_role(_valid_role_id)
+        print(_x_g_r_t)
         _valid_members_set.update(_x_g_r_t.members)
     if ctx.author in _valid_members_set:
         pass
     else:
+        print(_valid_members_set)
         await ctx.reply("Nah mate ur not kewl enough lol (No role perm)")
         return
     
