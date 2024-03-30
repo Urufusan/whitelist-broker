@@ -172,7 +172,13 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
     
     print(f"Sync command called by {ctx.author.name} - {mc_username}")
     add_player_to_whitelist(mc_username)
-    sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s)", (str(ctx.author.id), mc_username))
+    try:
+        sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s)", (str(ctx.author.id), mc_username))
+    except pymysql.err.IntegrityError:
+        print(sql_reader("SELECT mc_username FROM usertable WHERE user_id = %s", (str(ctx.author.id,))))
+        # remove_player_from_whitelist()
+        sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s) ON DUPLICATE KEY UPDATE mc_username = VALUES(mc_username), mc_uuid = ''",  (str(ctx.author.id), mc_username))
+    #          INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s) ON DUPLICATE KEY UPDATE mc_username = VALUES(mc_username)
     await ctx.reply(f"Successfully added ``{mc_username}`` to the whitelist!")
     # PSEUDO: Add username to whitelist, add alias to mongoDB
     # TODO: Minecraft username regex
