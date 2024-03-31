@@ -28,15 +28,13 @@ import pymysql
 import pymysql.cursors
 import re
 
-legal_mc_username_checker_rgx = re.compile(r"^[a-zA-Z0-9_]{2,16}$")
-ROLES_ID_CONSTANT = [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1142282014821711872,
-                     1221268481799094302, 1223681351903875222, 1223453351795101737, 1221760962714140753, 1142281928112881664]
+load_dotenv()
 
+legal_mc_username_checker_rgx = re.compile(r"^[a-zA-Z0-9_]{2,16}$")
 
 def is_username_legal(_username: str):
     return bool(legal_mc_username_checker_rgx.match(_username))
 
-load_dotenv()
 
 def print_trace(ex: BaseException):
     print(''.join(traceback.TracebackException.from_exception(ex).format()))
@@ -71,6 +69,13 @@ def add_player_to_whitelist(_username: str):
     
     return _r_post_obj.text
 
-for thingy in sql_reader("SELECT mc_username FROM usertable where mc_username IS NOT NULL"):
-    add_player_to_whitelist(thingy['mc_username'])
-    time.sleep(0.5)
+def get_player_whitelist():
+    _r_post_obj = requests.get(os.environ.get("WHITELIST_API_ENDPOINT"), headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
+    _r_post_obj.raise_for_status()
+    
+    return _r_post_obj.json()
+
+if __name__ == "__main__":
+    for thingy in sql_reader("SELECT mc_username FROM usertable where mc_username IS NOT NULL"):
+        add_player_to_whitelist(thingy['mc_username'])
+        time.sleep(0.5)
