@@ -17,10 +17,15 @@ import requests
 import rentry
 import whitelist_manupdate
 import os
+import hashlib
+
+def txt_to_hash(_text):
+    _m = hashlib.sha256(_text.encode('UTF-8'))
+    return _m.hexdigest()
 
 if __name__ == "__main__":
     page_text = "<h1>Whitelisted users</h1>\n<hr />\n<ul>"
-    for thingy in whitelist_manupdate.sql_reader("SELECT mc_username FROM usertable where mc_username IS NOT NULL; ORDER BY mc_username DESC"):
+    for thingy in whitelist_manupdate.sql_reader("SELECT mc_username FROM usertable where mc_username IS NOT NULL ORDER BY mc_username DESC"):
         page_text += f"<li>{thingy['mc_username']}</li>\n"
     page_text += "</ul>"
     rentry.edit(os.environ.get("RENTRY_PAGE"), os.environ.get("RENTRY_PASSWD"), page_text)
