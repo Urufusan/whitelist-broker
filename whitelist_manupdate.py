@@ -71,6 +71,6 @@ def add_player_to_whitelist(_username: str):
     
     return _r_post_obj.text
 
-for thingy in sql_reader("USE user1 ; SELECT mc_username FROM usertable where mc_username IS NOT NULL;"):
+for thingy in sql_reader("USE user1 ; SELECT mc_username FROM usertable where mc_username IS NOT NULLd"):
     add_player_to_whitelist(thingy['mc_username'])
     time.sleep(0.5)
