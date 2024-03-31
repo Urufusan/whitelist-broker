@@ -172,7 +172,6 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
         return
     
     print(f"Sync command called by {ctx.author.name} - {mc_username}")
-    add_player_to_whitelist(mc_username)
     try:
         sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s)", (str(ctx.author.id), mc_username))
     except pymysql.err.IntegrityError:
@@ -180,6 +179,8 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
         remove_player_from_whitelist(_existing_entry_for_removal[0]['mc_username'])
         _changed_user = True
         sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s) ON DUPLICATE KEY UPDATE mc_username = VALUES(mc_username), mc_uuid = ''",  (str(ctx.author.id), mc_username))
+    
+    add_player_to_whitelist(mc_username)
     #          INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s) ON DUPLICATE KEY UPDATE mc_username = VALUES(mc_username)
     await ctx.reply(f"Successfully added ``{mc_username}`` to the whitelist!" if not _changed_user else f"Successfully changed whitelisted nick from ``{_existing_entry_for_removal[0]['mc_username']}`` to ``{mc_username}``!")
     # PSEUDO: Add username to whitelist, add alias to mongoDB
