@@ -190,9 +190,10 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
         return
     
     if _t_s_r_o := sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {ctx.author.id}"):
-        print("Duplicate checker", _t_s_r_o)
-        await ctx.reply("## Conflict error!\nThis username is already whitelisted!")
-        return
+        if _t_s_r_o[0]['mc_username']:
+            print("Duplicate checker", _t_s_r_o)
+            await ctx.reply("## Conflict error!\nThis username is already whitelisted!")
+            return
     
     try:
         sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s)", (str(ctx.author.id), mc_username))
