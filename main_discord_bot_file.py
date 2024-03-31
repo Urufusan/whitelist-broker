@@ -222,7 +222,7 @@ async def whois(ctx: commands.Context[commands.Bot], mc_username: str):
         _raw_uid = ""
     if _raw_uid:
         _e = discord.Embed()
-        _e.set_footer(mc_username)
+        _e.set_footer(text=mc_username)
         _e.set_image(url=f"https://minotar.net/helm/{mc_username}/128.png")
         await ctx.reply(f"## Found user!\nMinecraft username ``{mc_username}`` is linked to user ``{client.get_user(int(_raw_uid)).name}`` [ <@{_raw_uid}> ]!", embed=_e)
     else:
