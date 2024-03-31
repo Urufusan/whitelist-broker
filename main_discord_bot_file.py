@@ -201,7 +201,7 @@ async def massinvite(ctx: commands.Context[commands.Bot]):
     #PSEUDO: Send DM message to each "paid" member, asking them to >>mcsync their accounts
     for _prem_member in list(_valid_members_set):
         try:
-            sql_writer("INSERT INTO usertable (user_id, already_invited) VALUES (%s, 1)", (str(ctx.author.id),))
+            sql_writer("INSERT INTO usertable (user_id, already_invited) VALUES (%s, 1)", (str(_prem_member.id),))
         except Exception as e:
             print(e)
             print(f"{_prem_member.name} is already in the database, skipping!")
