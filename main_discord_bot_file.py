@@ -189,7 +189,7 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
         await ctx.reply("The provided username is illegal (not a real minecraft username)!")
         return
     
-    if sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {ctx.author.id}")[0]['mc_username']:
+    if sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {ctx.author.id}"):
         await ctx.reply("## Conflict error!\nThis username is already whitelisted!")
         return
     
@@ -216,9 +216,13 @@ async def whois(ctx: commands.Context[commands.Bot], mc_username: str):
         await ctx.reply("The provided username is illegal (not a real minecraft username)!")
         return
     print("Running query:", mc_username)
-    _raw_uid = sql_reader(f"SELECT user_id FROM usertable WHERE mc_username = '{mc_username}'")[0]['user_id']
+    try:
+        _raw_uid = sql_reader(f"SELECT user_id FROM usertable WHERE mc_username = '{mc_username}'")[0]['user_id']
+    except IndexError:
+        _raw_uid = ""
     if _raw_uid:
         _e = discord.Embed()
+        _e.set_footer(mc_username)
         _e.set_image(url=f"https://minotar.net/helm/{mc_username}/128.png")
         await ctx.reply(f"## Found user!\nMinecraft username ``{mc_username}`` is linked to user ``{client.get_user(int(_raw_uid)).name}`` [ <@{_raw_uid}> ]!", embed=_e)
     else:
