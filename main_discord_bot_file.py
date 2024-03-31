@@ -292,6 +292,6 @@ example usage:
 
 If you encounter any issues with the bot, please report them to Urufusan!
 """)
-
+batch_update.start()
 
 client.run(os.environ.get('DISCORD_BOT_TOKEN'))
