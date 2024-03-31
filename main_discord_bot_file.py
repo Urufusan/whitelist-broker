@@ -184,6 +184,15 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
         return
     
     print(f"Sync command called by {ctx.author.name} - {mc_username}")
+    if not is_username_legal(mc_username):
+        print("FAIL USER")
+        ctx.reply("The provided username is illegal (not a real minecraft username)!")
+        return
+    
+    if sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {ctx.author.id}")[0]['mc_username']:
+        ctx.reply("## Conflict error!\nThis username is already whitelisted!")
+        return
+    
     try:
         sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s)", (str(ctx.author.id), mc_username))
     except pymysql.err.IntegrityError:
@@ -199,6 +208,20 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
     # PSEUDO: Add username to whitelist, add alias to mongoDB
     # TODO: Minecraft username regex
     pass
+
+@client.hybrid_command(help="Look up a minecraft account within Discord")
+async def whois(ctx: commands.Context[commands.Bot], mc_username: str):
+    if not is_username_legal(mc_username):
+        print("FAIL USER")
+        ctx.reply("The provided username is illegal (not a real minecraft username)!")
+        return
+    print("Running query:", mc_username)
+    _raw_uid = sql_reader(f"SELECT user_id FROM usertable WHERE mc_username = {mc_username}")[0]['user_id']
+    if _raw_uid:
+        ctx.reply(f"## Found user!\nMinecraft username ``{mc_username}`` is linked to user ``{client.get_user(int(_raw_uid)).name}`` [ <@{_raw_uid}> ]!")
+    else:
+        ctx.reply(f"Username ``{mc_username}`` has either never joined the server or the user has never linked their Discord profile to their Minecraft account.")
+    
 
 @client.hybrid_command(help="Send invities to users - manual trigger")
 @is_dev()
