@@ -216,9 +216,11 @@ async def whois(ctx: commands.Context[commands.Bot], mc_username: str):
         ctx.reply("The provided username is illegal (not a real minecraft username)!")
         return
     print("Running query:", mc_username)
-    _raw_uid = sql_reader(f"SELECT user_id FROM usertable WHERE mc_username = {mc_username}")[0]['user_id']
+    _raw_uid = sql_reader(f"SELECT user_id FROM usertable WHERE mc_username = '{mc_username}'")[0]['user_id']
     if _raw_uid:
-        ctx.reply(f"## Found user!\nMinecraft username ``{mc_username}`` is linked to user ``{client.get_user(int(_raw_uid)).name}`` [ <@{_raw_uid}> ]!")
+        _e = discord.Embed()
+        _e.set_image(url=f"https://minotar.net/helm/{mc_username}/128.png")
+        ctx.reply(f"## Found user!\nMinecraft username ``{mc_username}`` is linked to user ``{client.get_user(int(_raw_uid)).name}`` [ <@{_raw_uid}> ]!", embed=_e)
     else:
         ctx.reply(f"Username ``{mc_username}`` has either never joined the server or the user has never linked their Discord profile to their Minecraft account.")
     
