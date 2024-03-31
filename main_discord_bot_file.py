@@ -141,6 +141,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
+    # await ctx.defer()
+    await client.tree.sync()
     if message.author == client.user:
         return
 
