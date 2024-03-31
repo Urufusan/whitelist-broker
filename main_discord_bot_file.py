@@ -207,6 +207,7 @@ async def massinvite(ctx: commands.Context[commands.Bot]):
             print(f"{_prem_member.name} is already in the database, skipping!")
             continue
         #sql_writer("UPDATE usertable SET active = TRUE WHERE user_id = %s", (str(_prem_member.id),))
+        print(f"Invite sent to {_prem_member.name}!")
         await _prem_member.send(f"""
 # Hello {_prem_member.name}!
 
