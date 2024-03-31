@@ -202,9 +202,10 @@ async def massinvite(ctx: commands.Context[commands.Bot]):
     for _prem_member in list(_valid_members_set):
         try:
             sql_writer("INSERT INTO usertable (user_id, already_invited) VALUES (%s, %d)", (str(ctx.author.id), 1))
-        except:
+        except Exception as e:
+            print(e)
             print(f"{_prem_member.name} is already in the database, skipping!")
-            pass
+            continue
         #sql_writer("UPDATE usertable SET active = TRUE WHERE user_id = %s", (str(_prem_member.id),))
         await _prem_member.send(f"""
 # Hello {_prem_member.name}!
