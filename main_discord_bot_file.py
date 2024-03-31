@@ -140,7 +140,9 @@ async def on_ready():
     temp_act_role_object = discord.utils.get(xairen_guild.roles, name=TEMP_ACTIVITY_ROLE)
     real_act_role_object = discord.utils.get(xairen_guild.roles, name=REAL_ACTIVITY_ROLE)
     print(f'We have logged in as {client.user}')
+    batch_update.start()
     await client.tree.sync()
+
 
 @client.event
 async def on_message(message: discord.Message):
@@ -292,6 +294,5 @@ example usage:
 
 If you encounter any issues with the bot, please report them to Urufusan!
 """)
-batch_update.start()
 
 client.run(os.environ.get('DISCORD_BOT_TOKEN'))
