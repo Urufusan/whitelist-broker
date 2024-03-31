@@ -179,9 +179,9 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
     try:
         sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s)", (str(ctx.author.id), mc_username))
     except pymysql.err.IntegrityError:
-        _existing_entry_for_removal = sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {str(ctx.author.id)}")
+        _existing_entry_for_removal = sql_reader(f"SELECT mc_username, already_invited FROM usertable WHERE user_id = {str(ctx.author.id)}")
         remove_player_from_whitelist(_existing_entry_for_removal[0]['mc_username'])
-        _changed_user = True
+        _changed_user = not _existing_entry_for_removal[0]['already_invited']
         sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s) ON DUPLICATE KEY UPDATE mc_username = VALUES(mc_username), mc_uuid = ''",  (str(ctx.author.id), mc_username))
     
     add_player_to_whitelist(mc_username)
