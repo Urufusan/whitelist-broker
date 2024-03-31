@@ -36,4 +36,6 @@ if __name__ == "__main__":
             rentry.edit(os.environ.get("RENTRY_PAGE"), os.environ.get("RENTRY_PASSWD"), page_text)
             print("[WBroker HTML] Whitelist sent.")
             page_text_hash = _t_t_h
-        time.sleep(10)
+        else:
+            print("Page hasn't changed!")
+        time.sleep(30*60)
