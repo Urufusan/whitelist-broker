@@ -187,6 +187,7 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
     add_player_to_whitelist(mc_username)
     #          INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s) ON DUPLICATE KEY UPDATE mc_username = VALUES(mc_username)
     await ctx.reply(f"Successfully added ``{mc_username}`` to the whitelist!" if not _changed_user else f"Successfully changed whitelisted nick from ``{_existing_entry_for_removal[0]['mc_username']}`` to ``{mc_username}``!")
+    await client.get_channel(1221955537139400724).send(f"Successfully added ``{mc_username}`` to the whitelist!" if not _changed_user else f"Successfully changed whitelisted nick from ``{_existing_entry_for_removal[0]['mc_username']}`` to ``{mc_username}``!")
     # PSEUDO: Add username to whitelist, add alias to mongoDB
     # TODO: Minecraft username regex
     pass
@@ -255,5 +256,42 @@ async def on_command_error(ctx: commands.Context[commands.Bot], error: commands.
     )
     await ctx.reply(f"# ERROR\nThere was an error in {ctx.prefix}{command.qualified_name}, type {type(error).__name__}",
     )
+
+
+@tasks.loop(seconds=10.0)
+async def batch_update():
+    print("Mass invites started!")
+    _valid_members_set = set()
+    # for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302]:
+    for _valid_role_id in [1223453351795101737]:
+        _x_g_r_t: discord.Role = xairen_guild.get_role(_valid_role_id)
+        _valid_members_set.update(_x_g_r_t.members)
+    #PSEUDO: Send DM message to each "paid" member, asking them to >>mcsync their accounts
+    for _prem_member in list(_valid_members_set):
+        try:
+            sql_writer("INSERT INTO usertable (user_id, already_invited) VALUES (%s, 1)", (str(_prem_member.id),))
+        except Exception as e:
+            print(e)
+            print(f"{_prem_member.name} is already in the database, skipping!")
+            continue
+        #sql_writer("UPDATE usertable SET active = TRUE WHERE user_id = %s", (str(_prem_member.id),))
+        print(f"Invite sent to {_prem_member.name}!")
+        await _prem_member.send(f"""
+# Hello {_prem_member.name}!
+
+## You are a channel supporter of Okayxairen, which means that you have been granted access to the exclusive Minecraft server!
+
+In order to get whitelisted, you have to type ``>>mcsync yourusernamehere`` in this DM!
+After that's done, you may join the server on IP: ``mc.okayxairen.com``.
+
+```
+example usage:
+
+>>mcsync Urufusan_
+```
+
+If you encounter any issues with the bot, please report them to Urufusan!
+""")
+
 
 client.run(os.environ.get('DISCORD_BOT_TOKEN'))
