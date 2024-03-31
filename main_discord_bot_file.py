@@ -104,6 +104,7 @@ def add_player_to_whitelist(_username: str):
     return _r_post_obj.text
 
 def remove_player_from_whitelist(_username: str):
+    print("[WBroker] removing", _username)
     _r_post_obj = requests.delete(os.environ.get("WHITELIST_API_ENDPOINT"), json={'name': _username}, headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
     _r_post_obj.raise_for_status()
     
