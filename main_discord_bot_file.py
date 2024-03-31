@@ -166,7 +166,7 @@ async def restart(ctx: commands.Context[commands.Bot]):
 async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
     _changed_user = False
     _valid_members_set = set()
-    for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302, 1223681351903875222]:
+    for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302, 1223681351903875222, 1223453351795101737]:
         _x_g_r_t: discord.Role = xairen_guild.get_role(_valid_role_id)
         print(_x_g_r_t)
         _valid_members_set.update(_x_g_r_t.members)
@@ -200,7 +200,7 @@ async def massinvite(ctx: commands.Context[commands.Bot]):
     print("Mass invites started!")
     _valid_members_set = set()
     # for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302]:
-    for _valid_role_id in [1223453351795101737]:
+    for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302, 1223681351903875222, 1223453351795101737]:
         _x_g_r_t: discord.Role = xairen_guild.get_role(_valid_role_id)
         _valid_members_set.update(_x_g_r_t.members)
     #PSEUDO: Send DM message to each "paid" member, asking them to >>mcsync their accounts
@@ -260,7 +260,7 @@ async def on_command_error(ctx: commands.Context[commands.Bot], error: commands.
     )
 
 
-@tasks.loop(seconds=10.0)
+@tasks.loop(minutes=10.0)
 async def batch_update():
     print("Mass invites started!")
     _valid_members_set = set()
