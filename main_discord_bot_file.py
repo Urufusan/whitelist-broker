@@ -22,6 +22,9 @@ def is_username_legal(_username: str):
 
 load_dotenv()
 
+def print_trace(ex: BaseException):
+    print(''.join(traceback.TracebackException.from_exception(ex).format()))
+
 def safeunload():
     global sql_connection_ctx
     if sql_connection_ctx.open:
@@ -267,21 +270,22 @@ async def on_command_error(ctx: commands.Context[commands.Bot], error: commands.
 async def batch_update():
     print("Mass invites started!")
     _valid_members_set = set()
-    # for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302]:
-    for _valid_role_id in ROLES_ID_CONSTANT:
-        _x_g_r_t: discord.Role = xairen_guild.get_role(_valid_role_id)
-        _valid_members_set.update(_x_g_r_t.members)
-    #PSEUDO: Send DM message to each "paid" member, asking them to >>mcsync their accounts
-    for _prem_member in list(_valid_members_set):
-        try:
-            sql_writer("INSERT INTO usertable (user_id, already_invited) VALUES (%s, 1)", (str(_prem_member.id),))
-        except Exception as e:
-            print(e)
-            print(f"{_prem_member.name} is already in the database, skipping!")
-            continue
-        #sql_writer("UPDATE usertable SET active = TRUE WHERE user_id = %s", (str(_prem_member.id),))
-        print(f"Invite sent to {_prem_member.name}!")
-        await _prem_member.send(f"""
+    try:
+        # for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302]:
+        for _valid_role_id in ROLES_ID_CONSTANT:
+            _x_g_r_t: discord.Role = xairen_guild.get_role(_valid_role_id)
+            _valid_members_set.update(_x_g_r_t.members)
+        #PSEUDO: Send DM message to each "paid" member, asking them to >>mcsync their accounts
+        for _prem_member in list(_valid_members_set):
+            try:
+                sql_writer("INSERT INTO usertable (user_id, already_invited) VALUES (%s, 1)", (str(_prem_member.id),))
+            except Exception as e:
+                print(e)
+                print(f"{_prem_member.name} is already in the database, skipping!")
+                continue
+            #sql_writer("UPDATE usertable SET active = TRUE WHERE user_id = %s", (str(_prem_member.id),))
+            print(f"Invite sent to {_prem_member.name}!")
+            await _prem_member.send(f"""
 # Hello {_prem_member.name}!
 
 ## You are a channel supporter of Okayxairen, which means that you have been granted access to the exclusive Minecraft server!
@@ -297,5 +301,8 @@ example usage:
 
 If you encounter any issues with the bot, please report them to Urufusan!
 """)
+    except Exception as e:
+        # hacky
+        print_trace(e)
 
 client.run(os.environ.get('DISCORD_BOT_TOKEN'))
