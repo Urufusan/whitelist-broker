@@ -97,6 +97,7 @@ def is_dev():
 def add_player_to_whitelist(_username: str):
     if not is_username_legal(_username):
         raise ValueError("Username is illegal (is not a real username)!")
+    print("[WBroker] adding", _username)
     _r_post_obj = requests.post(os.environ.get("WHITELIST_API_ENDPOINT"), json={'name': _username}, headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
     _r_post_obj.raise_for_status()
     
