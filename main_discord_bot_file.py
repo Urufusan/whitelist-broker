@@ -158,15 +158,16 @@ async def restart(ctx: commands.Context[commands.Bot]):
 
 @client.hybrid_command(help="Sync your minecraft account with your Discord profile")
 async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
+    _changed_user = False
     _valid_members_set = set()
     for _valid_role_id in [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1221268481799094302, 1223681351903875222]:
         _x_g_r_t: discord.Role = xairen_guild.get_role(_valid_role_id)
-        print(_x_g_r_t, _x_g_r_t.members)
+        print(_x_g_r_t)
         _valid_members_set.update(_x_g_r_t.members)
     if ctx.author in _valid_members_set:
         pass
     else:
-        print(_valid_members_set)
+        # print(_valid_members_set)
         await ctx.reply("Nah mate ur not kewl enough lol (No role perm)")
         return
     
@@ -175,11 +176,12 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
     try:
         sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s)", (str(ctx.author.id), mc_username))
     except pymysql.err.IntegrityError:
-        print(sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {str(ctx.author.id)}"))
-        # remove_player_from_whitelist()
+        _existing_entry_for_removal = sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {str(ctx.author.id)}")
+        remove_player_from_whitelist(_existing_entry_for_removal[0]['mc_username'])
+        _changed_user = True
         sql_writer("INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s) ON DUPLICATE KEY UPDATE mc_username = VALUES(mc_username), mc_uuid = ''",  (str(ctx.author.id), mc_username))
     #          INSERT INTO usertable (user_id, mc_username) VALUES (%s, %s) ON DUPLICATE KEY UPDATE mc_username = VALUES(mc_username)
-    await ctx.reply(f"Successfully added ``{mc_username}`` to the whitelist!")
+    await ctx.reply(f"Successfully added ``{mc_username}`` to the whitelist!" if not _changed_user else f"Successfully changed whitelisted nick from ``{_existing_entry_for_removal[0]['mc_username']}`` to ``{mc_username}``!")
     # PSEUDO: Add username to whitelist, add alias to mongoDB
     # TODO: Minecraft username regex
     pass
