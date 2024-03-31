@@ -189,7 +189,8 @@ async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
         await ctx.reply("The provided username is illegal (not a real minecraft username)!")
         return
     
-    if sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {ctx.author.id}"):
+    if _t_s_r_o := sql_reader(f"SELECT mc_username FROM usertable WHERE user_id = {ctx.author.id}"):
+        print("Duplicate checker", _t_s_r_o)
         await ctx.reply("## Conflict error!\nThis username is already whitelisted!")
         return
     
