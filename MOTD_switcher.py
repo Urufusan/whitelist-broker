@@ -28,10 +28,16 @@ if __name__ == "__main__":
     page_text_hash = ""
     while True:
         page_text = "<h1>Whitelisted users</h1>\n<hr />\n<ul>"
+        players = []
         # for thingy in whitelist_manupdate.sql_reader("SELECT mc_username FROM usertable where mc_username IS NOT NULL ORDER BY mc_username ASC"):
         #     page_text += f"<li id='{thingy['mc_username'].lower()}'>{thingy['mc_username']}</li>\n"
         for thingy in whitelist_manupdate.get_player_whitelist():
-            page_text += f"<li id='{thingy['name'].lower()}'>{thingy['name']}</li>\n"
+            players.append(thingy['name'].lower())
+
+        players.sort()
+        
+        for player in players:
+            page_text += f"<li id='{player}'>{player}</li>\n"
         page_text += "</ul>"
         if page_text_hash != (_t_t_h := txt_to_hash(page_text)):
             print("[WBroker HTML] Sending to page...")
