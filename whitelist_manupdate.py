@@ -39,14 +39,15 @@ def is_username_legal(_username: str):
 def print_trace(ex: BaseException):
     print(''.join(traceback.TracebackException.from_exception(ex).format()))
 
-print("Connecting to SQL...")
-# Connect to the database
-sql_connection_ctx = pymysql.connect(host=os.environ.get("Q_MYSQL_HOST"),
-                             user=os.environ.get("Q_MYSQL_USER"),
-                             password=os.environ.get("Q_MYSQL_PASSWD"),
-                             database='user1',
-                             cursorclass=pymysql.cursors.DictCursor)
-print("Connected to SQL.")
+if __name__ == "__main__":
+    print("Connecting to SQL...")
+    # Connect to the database
+    sql_connection_ctx = pymysql.connect(host=os.environ.get("Q_MYSQL_HOST"),
+                                user=os.environ.get("Q_MYSQL_USER"),
+                                password=os.environ.get("Q_MYSQL_PASSWD"),
+                                database='user1',
+                                cursorclass=pymysql.cursors.DictCursor)
+    print("Connected to SQL.")
 
 def sql_reader(_SQL_statement: str,):
     with sql_connection_ctx.cursor() as cursor:
