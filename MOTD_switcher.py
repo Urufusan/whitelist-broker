@@ -46,4 +46,4 @@ if __name__ == "__main__":
             page_text_hash = _t_t_h
         else:
             print("Page hasn't changed!")
-        time.sleep(30*60)
+        time.sleep(20*60)
