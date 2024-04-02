@@ -372,6 +372,7 @@ If you encounter any issues with the bot, please report them to Urufusan!
             except AttributeError:
                 print("failed getting user", _t_member_object)
                 continue
+        print("Roles sync finished!")
     except Exception as e:
         # hacky
         print_trace(e)
