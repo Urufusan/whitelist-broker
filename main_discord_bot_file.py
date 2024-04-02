@@ -184,6 +184,18 @@ async def restart(ctx: commands.Context[commands.Bot]):
     executable = sys.executable
     os.execl(executable, executable, *sys.argv)
 
+@client.hybrid_command(help="Sync the minecraft role")
+@is_dev()
+async def syncroles(ctx: commands.Context[commands.Bot]):
+    print("Syncing MC roles...")
+    minecraft_role = discord.utils.get(xairen_guild.roles, name="Minecraft")
+    for _discord_user_id in sql_reader("SELECT user_id FROM usertable"):
+        _t_member_object = xairen_guild.get_member(int(_discord_user_id['user_id']))
+        await _t_member_object.add_roles(minecraft_role, reason="Syncing members!")
+    
+    await ctx.reply("OK!")
+
+
 @client.hybrid_command(help="Sync your minecraft account with your Discord profile")
 async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
     _changed_user = False
@@ -348,6 +360,11 @@ example usage:
 
 If you encounter any issues with the bot, please report them to Urufusan!
 """)
+        print("Syncing MC roles...")
+        minecraft_role = discord.utils.get(xairen_guild.roles, name="Minecraft")
+        for _discord_user_id in sql_reader("SELECT user_id FROM usertable"):
+            _t_member_object = xairen_guild.get_member(int(_discord_user_id['user_id']))
+            await _t_member_object.add_roles(minecraft_role, reason="Syncing members!")
     except Exception as e:
         # hacky
         print_trace(e)
