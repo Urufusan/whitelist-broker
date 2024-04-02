@@ -31,9 +31,13 @@ if __name__ == "__main__":
         players = []
         # for thingy in whitelist_manupdate.sql_reader("SELECT mc_username FROM usertable where mc_username IS NOT NULL ORDER BY mc_username ASC"):
         #     page_text += f"<li id='{thingy['mc_username'].lower()}'>{thingy['mc_username']}</li>\n"
-        for thingy in whitelist_manupdate.get_player_whitelist():
-            players.append(thingy['name'])
-
+        try:
+            for thingy in whitelist_manupdate.get_player_whitelist():
+                players.append(thingy['name'])
+        except requests.exceptions.ConnectionError:
+            print("uh oh, fetching failed!")
+            time.sleep(10)
+            continue
         players.sort()
         
         for player in players:
