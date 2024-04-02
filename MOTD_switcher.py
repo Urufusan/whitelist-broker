@@ -38,7 +38,8 @@ if __name__ == "__main__":
             print("uh oh, fetching failed!")
             time.sleep(10)
             continue
-        players.sort()
+        
+        players.sort(key=str.lower)
         
         for player in players:
             page_text += f"<li id='{player.lower()}'><img src='https://minotar.net/helm/{player.lower()}/8.png'>{player}</li>\n"
