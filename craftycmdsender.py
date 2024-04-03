@@ -44,5 +44,6 @@ token = os.environ.get("CRAFTY_TOKEN")
 # command = "mem"
 
 for h in get_player_whitelist():
-    send_stdin_command(server_id, token, f"lpv user {h['name']} permission set serverpermissions.server.xairencraft")
+    uuid_spec = requests.get(f"https://api.minecraftservices.com/minecraft/profile/lookup/name/{h['name']}").json()
+    send_stdin_command(server_id, token, f"lpv user {uuid_spec['id']} permission set serverpermissions.server.xairencraft")
     time.sleep(0.5)
