@@ -32,11 +32,13 @@ legal_mc_username_checker_rgx = re.compile(r"^[a-zA-Z0-9_]{2,16}$")
 ROLES_ID_CONSTANT = [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1142282014821711872,
                      1221268481799094302, 1223681351903875222, 1223453351795101737, 1221760962714140753, 1142281928112881664]
 
+load_dotenv()
+PROXY_ID = "6719ecfc-b1c8-4dd9-8ba5-ddf57af14112"
+CRAFTY_TOKEN_STR = os.environ.get("CRAFTY_TOKEN")
 
 def is_username_legal(_username: str):
     return bool(legal_mc_username_checker_rgx.match(_username))
 
-load_dotenv()
 
 def print_trace(ex: BaseException):
     print(''.join(traceback.TracebackException.from_exception(ex).format()))
@@ -59,6 +61,24 @@ sql_connection_ctx = pymysql.connect(host=os.environ.get("Q_MYSQL_HOST"),
                              database='user1',
                              cursorclass=pymysql.cursors.DictCursor)
 print("Connected to SQL.")
+
+
+def send_stdin_command_crafty(command: str, server_id = PROXY_ID, token = CRAFTY_TOKEN_STR):
+    url = f"https://panel.jased.xyz/api/v2/servers/{server_id}/stdin"
+    headers = {"Authorization": f"Bearer {token}"}
+    data = command
+    
+#    try:
+    response = requests.post(url, headers=headers, data=data)
+    response.raise_for_status()
+    print("Command sent successfully.")
+    # except requests.exceptions.RequestException as e:
+    #     print(f"Error sending command: {e}")
+
+def ensure_velocity_perms(_player_name: str, _group_name: str = "whitelistedmembers"):
+    _ash_r_json = requests.get(f"https://api.ashcon.app/mojang/v2/user/{_player_name}").json()
+    send_stdin_command_crafty(f"lpv user {_ash_r_json['uuid']} parent set {_group_name}")
+    print(f"[WBroker] Added velocity server perms to {_player_name}")
 
 # with connection:
 with sql_connection_ctx.cursor() as cursor:
@@ -122,6 +142,10 @@ def add_player_to_whitelist(_username: str):
     print("[WBroker] adding", _username)
     _r_post_obj = requests.post(os.environ.get("WHITELIST_API_ENDPOINT"), json={'name': _username}, headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
     _r_post_obj.raise_for_status()
+    try:
+        ensure_velocity_perms(_username)
+    except Exception as e:
+        print_trace(e)
     
     return _r_post_obj.text
 
@@ -129,7 +153,11 @@ def remove_player_from_whitelist(_username: str):
     print("[WBroker] removing", _username)
     _r_post_obj = requests.delete(os.environ.get("WHITELIST_API_ENDPOINT"), json={'name': _username}, headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
     _r_post_obj.raise_for_status()
-    
+    try:
+        ensure_velocity_perms(_username, "default")
+    except Exception as e:
+        print_trace(e)
+
     return _r_post_obj.text
 
 def get_player_whitelist():
