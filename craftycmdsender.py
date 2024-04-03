@@ -20,6 +20,12 @@ import os
 
 load_dotenv()
 
+def get_player_whitelist():
+    _r_post_obj = requests.get(os.environ.get("WHITELIST_API_ENDPOINT"), headers={'Authorization': f'WHA {os.environ.get("WHITELIST_API_TOKEN")}'})
+    _r_post_obj.raise_for_status()
+    
+    return _r_post_obj.json()
+
 def send_stdin_command(server_id, token, command):
     url = f"https://panel.jased.xyz/api/v2/servers/{server_id}/stdin"
     headers = {"Authorization": f"Bearer {token}"}
@@ -33,11 +39,9 @@ def send_stdin_command(server_id, token, command):
         print(f"Error sending command: {e}")
 
 # Example usage:
-server_id = "dcb39d17-6a4d-4f68-bf67-f9687e734372"
+server_id = "6719ecfc-b1c8-4dd9-8ba5-ddf57af14112"
 token = os.environ.get("CRAFTY_TOKEN")
 # command = "mem"
-with open("beemoviescript.txt") as f:
-    z = f.readlines()
-for h in z:
-    send_stdin_command(server_id, token, f"say {h.strip()}")
-    time.sleep(2)
+
+for h in get_player_whitelist():
+    send_stdin_command(server_id, token, f"lpv user {h['name']} permission set serverpermissions.server.xairencraft")
