@@ -45,3 +45,4 @@ token = os.environ.get("CRAFTY_TOKEN")
 
 for h in get_player_whitelist():
     send_stdin_command(server_id, token, f"lpv user {h['name']} permission set serverpermissions.server.xairencraft")
+    time.sleep(0.5)
