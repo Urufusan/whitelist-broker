@@ -229,7 +229,7 @@ async def syncroles(ctx: commands.Context[commands.Bot]):
 
 @client.hybrid_command(help="Sync your minecraft account with your Discord profile")
 async def mcsync(ctx: commands.Context[commands.Bot], mc_username: str):
-    ctx.defer()
+    await ctx.defer()
     _changed_user = False
     _valid_members_set = set()
     for _valid_role_id in ROLES_ID_CONSTANT:
