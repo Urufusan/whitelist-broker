@@ -392,16 +392,17 @@ example usage:
 
 If you encounter any issues with the bot, please report them to Urufusan!
 """)
-        print("Syncing MC roles...")
-        minecraft_role = discord.utils.get(xairen_guild.roles, name="Minecraft")
-        for _discord_user_id in sql_reader("SELECT user_id FROM usertable"):
-            try:
-                _t_member_object = xairen_guild.get_member(int(_discord_user_id['user_id']))
-                await _t_member_object.add_roles(minecraft_role, reason="Syncing members!")
-            except AttributeError:
-                print("failed getting user", _t_member_object)
-                continue
-        print("Roles sync finished!")
+        if False:
+            print("Syncing MC roles...")
+            minecraft_role = discord.utils.get(xairen_guild.roles, name="Minecraft")
+            for _discord_user_id in sql_reader("SELECT user_id FROM usertable"):
+                try:
+                    _t_member_object = xairen_guild.get_member(int(_discord_user_id['user_id']))
+                    await _t_member_object.add_roles(minecraft_role, reason="Syncing members!")
+                except AttributeError:
+                    print("failed getting user", _t_member_object)
+                    continue
+            print("Roles sync finished!")
     except Exception as e:
         # hacky
         print_trace(e)
