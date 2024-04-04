@@ -328,18 +328,18 @@ If you encounter any issues with the bot, please report them to Urufusan!
 """)
     pass
 
-@client.event
-async def on_voice_state_update(member:discord.Member, before:discord.VoiceState, after:discord.VoiceState):
-    global temp_act_role_object
-    global real_act_role_object  
-    print(member, before.channel.name, after.channel.name)
+# @client.event
+# async def on_voice_state_update(member:discord.Member, before:discord.VoiceState, after:discord.VoiceState):
+#     global temp_act_role_object
+#     global real_act_role_object  
+#     print(member, before.channel.name, after.channel.name)
 
-    # print(rolle)
-    if real_act_role_object not in member.roles:
-        if after.channel.name == "asdasd":
-            await member.add_roles(temp_act_role_object)
-        elif before.channel.name == "asdasd":
-            await member.remove_roles(temp_act_role_object)
+#     # print(rolle)
+#     if real_act_role_object not in member.roles:
+#         if after.channel.name == "asdasd":
+#             await member.add_roles(temp_act_role_object)
+#         elif before.channel.name == "asdasd":
+#             await member.remove_roles(temp_act_role_object)
 
 @client.event
 async def on_command_error(ctx: commands.Context[commands.Bot], error: commands.CommandError):
