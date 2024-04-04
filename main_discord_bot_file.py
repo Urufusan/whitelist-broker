@@ -190,7 +190,7 @@ async def on_ready():
     temp_act_role_object = discord.utils.get(xairen_guild.roles, name=TEMP_ACTIVITY_ROLE)
     real_act_role_object = discord.utils.get(xairen_guild.roles, name=REAL_ACTIVITY_ROLE)
     print(f'We have logged in as {client.user}')
-    batch_update.start()
+    # batch_update.start()
     await client.tree.sync()
 
 
