@@ -68,7 +68,7 @@ if __name__ == "__main__":
         players.sort(key=str.lower)
         
         for player in players:
-            page_text += f"<li id='{player.lower()}'><img src='https://minotar.net/helm/{player.lower()}/8.png'>{player}</li>\n"
+            page_text += f"<li id='{player.lower()}'><img src='https://mc-heads.net/avatar/{player.lower()}/8.png'>{player}</li>\n"
         page_text += "</ul>"
         if page_text_hash != (_t_t_h := txt_to_hash(page_text)):
             print("[WBroker HTML] Sending to page...")
