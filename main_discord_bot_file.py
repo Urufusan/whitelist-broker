@@ -15,6 +15,7 @@
 
 
 from pprint import pprint
+import time
 import traceback
 from typing import Any
 import discord
@@ -76,7 +77,14 @@ def send_stdin_command_crafty(command: str, server_id = PROXY_ID, token = CRAFTY
     #     print(f"Error sending command: {e}")
 
 def ensure_velocity_perms(_player_name: str, _group_name: str = "whitelistedmembers"):
-    _ash_r_json = requests.get(f"https://api.ashcon.app/mojang/v2/user/{_player_name}").json()
+    for _ in range(3):
+        try:
+            _ash_r_json = requests.get(f"https://api.ashcon.app/mojang/v2/user/{_player_name}").json()
+            pprint(_ash_r_json['uuid'])
+            break
+        except KeyError:
+             print("Failed to get player uuid!")
+             time.sleep(2)
     send_stdin_command_crafty(f"lpv user {_ash_r_json['uuid']} parent set {_group_name}")
     print(f"[WBroker] Added velocity server perms to {_player_name}")
 
