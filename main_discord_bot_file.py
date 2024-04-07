@@ -361,7 +361,7 @@ async def on_command_error(ctx: commands.Context[commands.Bot], error: commands.
         + "\n"
         f"{''.join(traceback.format_exception(type(error), error, error.__traceback__))}"
     )
-    await ctx.reply(f"# ERROR\nThere was an error in {ctx.prefix}{command.qualified_name}, type {type(error).__name__}",
+    await ctx.reply(f"# ERROR\nThere was an error in {ctx.prefix}{command.qualified_name}, type: {type(error).__name__}",
     )
 
 
