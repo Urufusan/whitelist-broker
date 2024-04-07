@@ -30,12 +30,28 @@ import pymysql.cursors
 import re
 
 legal_mc_username_checker_rgx = re.compile(r"^[a-zA-Z0-9_]{2,16}$")
+sql_connection_ctx = None
 ROLES_ID_CONSTANT = [1214662167102492733, 1214662215198838846, 1215708993150787584, 1151653698758508564, 1142282014821711872,
                      1221268481799094302, 1223681351903875222, 1223453351795101737, 1221760962714140753, 1142281928112881664]
 
 load_dotenv()
 PROXY_ID = "6719ecfc-b1c8-4dd9-8ba5-ddf57af14112"
 CRAFTY_TOKEN_STR = os.environ.get("CRAFTY_TOKEN")
+
+# SQL stuff
+def _load_sql_conn():
+    print("Connecting to SQL...")
+    # Connect to the database
+    _t_sql_connection_ctx = pymysql.connect(host=os.environ.get("Q_MYSQL_HOST"),
+                                user=os.environ.get("Q_MYSQL_USER"),
+                                password=os.environ.get("Q_MYSQL_PASSWD"),
+                                database='user1',
+                                cursorclass=pymysql.cursors.DictCursor)
+    print("Connected to SQL.")
+    return _t_sql_connection_ctx
+
+sql_connection_ctx = _load_sql_conn()
+
 
 def is_username_legal(_username: str):
     return bool(legal_mc_username_checker_rgx.match(_username))
@@ -51,17 +67,6 @@ def safeunload():
         print("SQL connection closed on exit.")
 
 atexit.register(safeunload)
-
-# SQL stuff
-
-print("Connecting to SQL...")
-# Connect to the database
-sql_connection_ctx = pymysql.connect(host=os.environ.get("Q_MYSQL_HOST"),
-                             user=os.environ.get("Q_MYSQL_USER"),
-                             password=os.environ.get("Q_MYSQL_PASSWD"),
-                             database='user1',
-                             cursorclass=pymysql.cursors.DictCursor)
-print("Connected to SQL.")
 
 
 def send_stdin_command_crafty(command: str, server_id = PROXY_ID, token = CRAFTY_TOKEN_STR):
@@ -89,51 +94,62 @@ def ensure_velocity_perms(_player_name: str, _group_name: str = "whitelistedmemb
     print(f"[WBroker] Added velocity server perms to {_player_name}")
 
 # with connection:
-with sql_connection_ctx.cursor() as cursor:
+with sql_connection_ctx.cursor() as _t_cursor:
     # Create a new record
     # sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
     # cursor.execute(sql, ('webmaster@python.org', 'very-secret'))
-    cursor.execute("select @@version")
-    pprint(cursor.fetchall())
+    _t_cursor.execute("select @@version")
+    pprint(_t_cursor.fetchall())
 # connection is not autocommit by default. So you must commit to save
 # your changes.
 # connection.commit()
     
 # with connection:
-with sql_connection_ctx.cursor() as cursor:
+with sql_connection_ctx.cursor() as _t_cursor:
     # Read a single record
-    sql = "SELECT * from usertable"
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    pprint(result)
+    _t_sql_all_data = "SELECT * from usertable"
+    _t_cursor.execute(_t_sql_all_data)
+    pprint(_t_cursor.fetchall())
     
 print("SQL OK")
 # sql_connection_ctx.close()
 
 def sql_writer(_SQL_statement: str, data: tuple[Any]):
-    with sql_connection_ctx.cursor() as cursor:
-        print("[WRITER]", data)
-        # SQL statement to insert data into the table
+    global sql_connection_ctx
+    try:
+        with sql_connection_ctx.cursor() as cursor:
+            print("[WRITER]", data)
+            # SQL statement to insert data into the table
 
-        # Execute the SQL statement
-        _t_r_c = cursor.execute(_SQL_statement, data)
-        
-        # Commit the transaction
-        sql_connection_ctx.commit()
-        # print("SQL OK")
-        return _t_r_c
+            # Execute the SQL statement
+            _t_r_c = cursor.execute(_SQL_statement, data)
+            
+            # Commit the transaction
+            sql_connection_ctx.commit()
+            # print("SQL OK")
+            return _t_r_c
+    except pymysql.OperationalError:
+        sql_connection_ctx = _load_sql_conn()
+        time.sleep(2)
+        sql_writer(_SQL_statement, data)
 
-def sql_reader(_SQL_statement: str,):
-    with sql_connection_ctx.cursor() as cursor:
-        print("[READER]", _SQL_statement)
-        # SQL statement to insert data into the table
+def sql_reader(_SQL_statement: str):
+    global sql_connection_ctx
+    try:
+        with sql_connection_ctx.cursor() as cursor:
+            print("[READER]", _SQL_statement)
+            # SQL statement to insert data into the table
 
-        # Execute the SQL statement
-        cursor.execute(_SQL_statement)
-        
-        # Commit the transaction
-        # print("SQL OK")
-        return cursor.fetchall()
+            # Execute the SQL statement
+            cursor.execute(_SQL_statement)
+            
+            # Commit the transaction
+            # print("SQL OK")
+            return cursor.fetchall()
+    except pymysql.OperationalError:
+        sql_connection_ctx = _load_sql_conn()
+        time.sleep(2)
+        return sql_reader(_SQL_statement)
 
 
 def is_dev():
