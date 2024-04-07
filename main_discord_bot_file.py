@@ -128,7 +128,8 @@ def sql_writer(_SQL_statement: str, data: tuple[Any]):
             sql_connection_ctx.commit()
             # print("SQL OK")
             return _t_r_c
-    except pymysql.OperationalError:
+    except (pymysql.err.OperationalError, pymysql.err.InterfaceError):
+        print("SQL Connection error!")
         sql_connection_ctx = _load_sql_conn()
         time.sleep(2)
         sql_writer(_SQL_statement, data)
@@ -146,7 +147,8 @@ def sql_reader(_SQL_statement: str):
             # Commit the transaction
             # print("SQL OK")
             return cursor.fetchall()
-    except pymysql.OperationalError:
+    except (pymysql.err.OperationalError, pymysql.err.InterfaceError):
+        print("SQL Connection error!")
         sql_connection_ctx = _load_sql_conn()
         time.sleep(2)
         return sql_reader(_SQL_statement)
